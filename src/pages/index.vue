@@ -1,8 +1,9 @@
 <template>
   <section class="dashboard-content">
     <div class="form-section">
-      <div>
-        <span class="label" type="text">导入订单信息</span>
+      <div class="section-title">更新订单总表</div>
+      <div class="mt-m">
+        <span class="label" type="text">导入订单</span>
         <el-button size="small" @click="$refs.upload.click()">选择文件</el-button>
         <span class="remark" v-if="file">{{ file.name }}</span>
       </div>
@@ -13,8 +14,8 @@
       </div>
       <input type="file" ref="upload" @change="chooseFile">
     </div>
-
     <div class="form-section">
+      <div class="section-title mb-m">筛选订单</div>
       <label class="filter-label">
         <span class="label-content">订单ID</span>
         <el-input v-model="filter.id"></el-input>
@@ -36,7 +37,7 @@
       </label>
       <label class="filter-label">
         <span class="label-content">订单状态</span>
-        <el-select v-model="filter.account" placeholder="">
+        <el-select v-model="filter.status" placeholder="">
           <el-option label="全部" value="1"></el-option>
           <el-option label="待确认" value="2"></el-option>
           <el-option label="待发货" value="3"></el-option>
@@ -47,18 +48,17 @@
       </label>
       <label class="filter-label">
         <span class="label-content">快递公司</span>
-        <el-select v-model="filter.account" placeholder="">
-          <el-option label="全部快递" value="1"></el-option>
+        <el-select v-model="filter.express" placeholder="">
+          <el-option label="全部" value="1"></el-option>
           <el-option label="德邦物流" value="2"></el-option>
           <el-option label="韵达快递" value="3"></el-option>
         </el-select>
       </label>
-      <div>
+      <div class="mt-m">
         <el-button size="small" type="primary">筛选</el-button>
         <span class="remark">共{{ orders.length }}个订单</span>
       </div>
     </div>
-
     <el-table height="800" :data="orders">
       <el-table-column prop="订单ID" label="订单ID" />
       <el-table-column prop="订单状态" label="订单状态" />
@@ -75,8 +75,6 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <div></div>
   </section>
 </template>
 
@@ -93,7 +91,8 @@ export default {
         name: '',
         phone: '',
         date: '',
-        status: '',
+        status: '全部',
+        express: '全部',
       },
       file: null,
       tableData: [],
@@ -115,11 +114,15 @@ export default {
       fileReader.onload = (e) => {
         const workbook = XLSX.read(e.target.result, { type: 'binary', cellDates: true, cellStyles: true });
         const orders = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-        this.$store.dispatch('updateOrders', orders);
-        this.$nextTick(() => {
-          this.$message({ message: '导入成功', type: 'success' });
-          this.file = null;
-          this.isLoaded = true;
+        this.$http.post('/api/orders/upload', { orders }).then(({ data }) => {
+          this.$store.dispatch('updateOrders', data);
+          this.$nextTick(() => {
+            this.$message({ message: '导入成功', type: 'success' });
+            this.file = null;
+            this.isLoaded = true;
+          });
+        }).catch(() => {
+          this.$message.error('服务器还未搞定');
         });
       };
       fileReader.readAsBinaryString(this.file);

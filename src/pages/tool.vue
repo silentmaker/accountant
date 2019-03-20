@@ -27,9 +27,13 @@
         <el-button size="small" type="primary" @click="mergeFile" :disabled="disabled">确认合并</el-button>
         <span class="remark">在发货表里找不到运单号的订单，快递公司会变成未知，快递单号会变成空</span>
       </div>
+      <input type="file" ref="uploadSource" @change="chooseSource">
+      <input type="file" ref="uploadTarget" @change="chooseTarget">
     </div>
-    <input type="file" ref="uploadSource" @change="chooseSource">
-    <input type="file" ref="uploadTarget" @change="chooseTarget">
+    <div class="form-section">
+      <div class="section-title mb-m">常用平台帐号</div>
+      <el-button size="small" type="primary" icon="el-icon-view" plain @click="gotoDoc">查看文档</el-button>
+    </div>
   </section>
 </template>
 
@@ -101,6 +105,9 @@ export default {
         XLSX.utils.book_append_sheet(book, sheet, 'Sheet1');
         XLSX.writeFile(book, '枫页关联运单号列表.xls');
       });
+    },
+    gotoDoc() {
+      window.open('https://docs.qq.com/sheet/DYWZTdVRSS3BIam1U');
     },
   },
 };

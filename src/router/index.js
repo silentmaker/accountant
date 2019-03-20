@@ -4,7 +4,7 @@ import VueRouter from 'vue-router';
 Vue.use(VueRouter);
 
 export default new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   routes: [
     {
       path: '/index',
@@ -12,9 +12,14 @@ export default new VueRouter({
       component: () => import(/* webpackChunkName: "js/index" */ '@/pages/index.vue'),
     },
     {
-      path: '/troubles',
-      name: 'troubles',
-      component: () => import(/* webpackChunkName: "js/troubles" */ '@/pages/troubles.vue'),
+      path: '/trouble',
+      name: 'trouble',
+      component: () => import(/* webpackChunkName: "js/trouble" */ '@/pages/trouble.vue'),
+    },
+    {
+      path: '/return',
+      name: 'return',
+      component: () => import(/* webpackChunkName: "js/return" */ '@/pages/return.vue'),
     },
     {
       path: '/profit',
